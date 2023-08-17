@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/features/auth/repo/auth_repo.dart';
 
-final authController = Provider((ref) =>
+final authControllerProvider = Provider((ref) =>
     AuthController(authRepository: ref.watch(authRepositoryProvider)));
 
 class AuthController {

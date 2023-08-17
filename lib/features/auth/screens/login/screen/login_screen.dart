@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/colors.dart';
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
+import 'package:whats_app_clone/features/auth/repo/auth_repo.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final phoneController = TextEditingController();
   CountryCode? country;
 
@@ -19,8 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
     phoneController.dispose();
   }
 
-  void pickCountry() {
+  void sendNumber() {
+    String phoneNumber = phoneController.text.trim();
+    if(country!=null && phoneNumber.isNotEmpty){
+      ref.read(authControllerProvider).signInWithPhoneNumber(context, "${country!.dialCode}$phoneNumber");
+    }
 
+    // ref.read(provider)
   }
   @override
   Widget build(BuildContext context) {
