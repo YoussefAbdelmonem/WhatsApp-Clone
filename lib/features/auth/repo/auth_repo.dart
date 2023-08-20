@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whats_app_clone/common/repo/common_firebase_storage.dart';
 import 'package:whats_app_clone/features/auth/screens/otp/otp_screen.dart';
 import 'package:whats_app_clone/features/auth/screens/user_information/user_information_screen.dart';
 
@@ -56,6 +59,27 @@ class AuthRepository {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.message!),
       ));
+    }
+  }
+
+  void saveUserData ({
+    required BuildContext context,
+    required File ? profileImage,
+    required String name,
+    required WidgetRef ref,
+})async{
+    try {
+      String uid = auth.currentUser!.uid;
+      String photoUrl = "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRnXB0Z-Z_IfdLilDUsP2H3m_Ce68gZS1uU3Xdr-dlCYUxz6dVVGVq47uXLr8BFdHg3du51HppF15uCFis";
+
+      if(profileImage!=null)
+      {
+        photoUrl= await ref.read(commonFirebaseStorageRepoProvider).storeFileToFireStore("profileImages/$uid", profileImage);
+
+      }
+
+    } catch(e){
+      print(e);
     }
   }
 }
