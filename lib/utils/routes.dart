@@ -19,10 +19,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         ),
       );
     case UserInformationScreen.routeName:
-
       return MaterialPageRoute(
         builder: (context) => const UserInformationScreen(),
       );
+
+
+
     default:
       return MaterialPageRoute(
         builder: (context) => const SplashScreen(),

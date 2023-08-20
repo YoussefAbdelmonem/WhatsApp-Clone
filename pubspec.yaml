@@ -24,6 +24,7 @@ dependencies:
   cloud_firestore: ^4.8.5
   #
   country_code_picker: 3.0.0
+  image_picker: ^1.0.2
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
 
