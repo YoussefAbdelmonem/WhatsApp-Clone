@@ -11,7 +11,7 @@ class AuthController {
 
   AuthController({required this.authRepository});
 
-  void signInWithPhoneNumber(BuildContext context, String phoneNumber) async {
-    await authRepository.signInWithPhoneNumber(context, phoneNumber);
+   signInWithPhoneNumber(BuildContext context, String phoneNumber)  {
+     authRepository.signInWithPhoneNumber(context, phoneNumber);
   }
 }

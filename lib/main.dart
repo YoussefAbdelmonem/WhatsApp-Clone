@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whats_app_clone/colors.dart';
+import 'package:whats_app_clone/features/auth/screens/splash/splash_screen.dart';
 import 'package:whats_app_clone/firebase_options.dart';
+import 'package:whats_app_clone/utils/routes.dart';
 
 import 'features/auth/screens/login/screen/login_screen.dart';
 
@@ -21,11 +24,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+
       theme: ThemeData(
 
         primarySwatch: Colors.green,
+        appBarTheme: AppBarTheme(
+          backgroundColor: backgroundColor,
+          centerTitle: true,
+          elevation: 0,
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+
+          )
+        ),
+        scaffoldBackgroundColor: backgroundColor,
       ),
-      home: LoginScreen(),
+      onGenerateRoute: (settings) => generateRoute(settings),
     );
   }
 }
