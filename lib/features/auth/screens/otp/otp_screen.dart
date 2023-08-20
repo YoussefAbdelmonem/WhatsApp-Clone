@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/componets/text_widget.dart';
+import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
 import 'package:whats_app_clone/utils/responsive_layout.dart';
 
-class OTPScreen extends StatelessWidget {
-  const OTPScreen({super.key, required this.verificationId});
+class OTPScreen extends ConsumerWidget {
+  const OTPScreen({ required this.verificationId});
   static const String routeName = '/otp-screen';
   final String verificationId;
 
+  void verifyOtp(BuildContext context ,String userOtp, WidgetRef ref){
+    ref.read(authControllerProvider).verifyYourOtp(context, verificationId, userOtp);
+  }
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -47,8 +52,12 @@ class OTPScreen extends StatelessWidget {
                   )
                 ),
                 keyboardType: TextInputType.number,
-                onChanged: (e){
-
+                onChanged: (value){
+                  if(value.length == 6){
+                    print("verify");
+                    verifyOtp(context, value.trim(), ref);
+                  }
+                  print("progress");
                 },
               ),
             )
@@ -57,4 +66,5 @@ class OTPScreen extends StatelessWidget {
       ),
     );
   }
+
 }
