@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/colors.dart';
 import 'package:whats_app_clone/features/auth/screens/splash/splash_screen.dart';
 import 'package:whats_app_clone/firebase_options.dart';
+import 'package:whats_app_clone/screens/mobile_layout_screen.dart';
 import 'package:whats_app_clone/utils/routes.dart';
 
+import 'features/auth/controller/auth_controller.dart';
 import 'features/auth/screens/login/screen/login_screen.dart';
 
 void main()async {
@@ -16,12 +18,12 @@ void main()async {
   runApp(const ProviderScope(child:  MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -42,6 +44,18 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundColor,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
+      home: ref.watch(userDataAuthProvider).when(
+        data: (user) {
+          if (user == null) {
+            return const SplashScreen();
+          }
+          return const MobileLayoutScreen();
+        }, error: (Object error, StackTrace stackTrace) {
+          return Center(
+            child: Text(error.toString()),
+          );
+      }, loading: () => const Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }

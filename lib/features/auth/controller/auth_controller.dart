@@ -1,35 +1,60 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whats_app_clone/data/model/user_model.dart';
 import 'package:whats_app_clone/features/auth/repo/auth_repo.dart';
 
-final authControllerProvider = Provider(
-  (ref) => AuthController(ref, authRepository: ref.watch(authRepositoryProvider)),
-);
+
+final authControllerProvider = Provider((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return AuthController(authRepository: authRepository, ref: ref);
+});
+
+final userDataAuthProvider = FutureProvider((ref) {
+  final authController = ref.watch(authControllerProvider);
+  return authController.getUserData();
+});
 
 class AuthController {
   final AuthRepository authRepository;
-  final ProviderRef ref ;
+  final ProviderRef ref;
+  AuthController({
+    required this.authRepository,
+    required this.ref,
+  });
 
-  AuthController(this.ref, {required this.authRepository});
+  Future<UserModel?> getUserData() async {
+    UserModel? user = await authRepository.getCurrentUserData();
+    return user;
+  }
 
-  signInWithPhoneNumber(BuildContext context, String phoneNumber) {
+  void signInWithPhone(BuildContext context, String phoneNumber) {
     authRepository.signInWithPhoneNumber(context, phoneNumber);
   }
 
-  verifyYourOtp(BuildContext context, String verificationID, String otp) {
+  void verifyOTP(BuildContext context, String verificationId, String userOTP) {
     authRepository.verifyOTP(
-        context: context, otp: otp, verificationId: verificationID);
+      context: context,
+      verificationId: verificationId,
+      userOTP: userOTP,
+    );
   }
 
   void saveUserDataToFirebase(
-      BuildContext context, String name, File? profilePicture) {
-    authRepository.saveUserData(
-      context: context,
+      BuildContext context, String name, File? profilePic) {
+    authRepository.saveUserDataToFirebase(
       name: name,
-      profileImage: profilePicture,
+      profilePic: profilePic,
       ref: ref,
+      context: context,
     );
   }
+
+  // Stream<UserModel> userDataById(String userId) {
+  //   return authRepository.userData(userId);
+  // }
+  //
+  // void setUserState(bool isOnline) {
+  //   authRepository.setUserState(isOnline);
+  // }
 }

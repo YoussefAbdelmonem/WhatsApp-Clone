@@ -31,7 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (country != null && phoneNumber.isNotEmpty) {
       ref
           .read(authControllerProvider)
-          .signInWithPhoneNumber(context, "${country!.dialCode}$phoneNumber");
+          .signInWithPhone(context, "${country!.dialCode}$phoneNumber");
     }
 
     // ref.read(provider)

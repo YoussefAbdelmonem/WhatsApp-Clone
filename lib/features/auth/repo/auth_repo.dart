@@ -46,52 +46,93 @@ class AuthRepository {
     }
   }
 
-  void verifyOTP(
-      {required BuildContext context,
-      required String otp,
-      required String verificationId}) async {
+  Future<UserModel?> getCurrentUserData() async {
+    var userData =
+    await firebaseFireStore.collection('users').doc(auth.currentUser?.uid).get();
+
+    UserModel? user;
+    if (userData.data() != null) {
+      user = UserModel.fromJson(userData.data()!);
+    }
+    return user;
+  }
+
+  void verifyOTP({
+    required BuildContext context,
+    required String verificationId,
+    required String userOTP,
+  }) async {
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
-        smsCode: otp,
+        smsCode: userOTP,
       );
       await auth.signInWithCredential(credential);
       Navigator.pushNamedAndRemoveUntil(
-          context, UserInformationScreen.routeName, (route) => false);
+        context,
+        UserInformationScreen.routeName,
+            (route) => false,
+      );
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.message!),
-      ));
+          content: Text(e.message!)));
     }
   }
 
-  void saveUserData({
-    required BuildContext context,
-    required File? profileImage,
+  void saveUserDataToFirebase({
     required String name,
-    required dynamic ref,
+    required File? profilePic,
+    required ProviderRef ref,
+    required BuildContext context,
   }) async {
     try {
       String uid = auth.currentUser!.uid;
-      String photoUrl = "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRnXB0Z-Z_IfdLilDUsP2H3m_Ce68gZS1uU3Xdr-dlCYUxz6dVVGVq47uXLr8BFdHg3du51HppF15uCFis";
+      String photoUrl =
+          'https://png.pngitem.com/pimgs/s/649-6490124_katie-notopoulos-katienotopoulos-i-write-about-tech-round.png';
 
-      if (profileImage != null) {
+      if (profilePic != null) {
         photoUrl = await ref
-            .read(commonFirebaseStorageRepoProvider)
-            .storeFileToFireStore("profileImages/$uid", profileImage);
+            .read(commonFirebaseStorageRepositoryProvider)
+            .storeFileToFirebase(
+          'profilePic/$uid',
+          profilePic,
+        );
       }
+
       var user = UserModel(
         name: name,
-        phoneNumber: auth.currentUser!.uid,
-        profilePicture: photoUrl,
         uid: uid,
         isOnline: true,
-        groupIds: [],
+        phoneNumber: auth.currentUser!.phoneNumber!,
+       groupIds: [],
+        profilePicture: photoUrl,
       );
-      await firebaseFireStore.collection("users").doc(uid).set(user.toJson());
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => MobileLayoutScreen()), (route) => false);
+
+      await firebaseFireStore.collection('users').doc(uid).set(user.toJson());
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MobileLayoutScreen(),
+        ),
+            (route) => false,
+      );
     } catch (e) {
-      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString())));
     }
+  }
+  Stream<UserModel> userData(String userId) {
+    return firebaseFireStore.collection('users').doc(userId).snapshots().map(
+          (event) => UserModel.fromJson(
+        event.data()!,
+      ),
+    );
+  }
+
+  void setUserState(bool isOnline) async {
+    await firebaseFireStore.collection('users').doc(auth.currentUser!.uid).update({
+      'isOnline': isOnline,
+    });
   }
 }
