@@ -5,6 +5,7 @@ import 'package:whats_app_clone/widgets/chat_list.dart';
 
 
 class MobileChatScreen extends StatelessWidget {
+  static const routeName = '/mobile-chat';
   const MobileChatScreen({Key? key}) : super(key: key);
 
   @override

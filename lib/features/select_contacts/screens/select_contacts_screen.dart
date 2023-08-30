@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nil/nil.dart';
 import 'package:whats_app_clone/componets/text_widget.dart';
@@ -6,6 +7,11 @@ import 'package:whats_app_clone/features/select_contacts/controller/select_conta
 
 class SelectContactScreen extends ConsumerWidget {
   static const String routeName = '/select-contact';
+
+  void selectContacts (BuildContext context, Contact selectedContact, WidgetRef ref) {
+    ref.read(selectContactsControllerProvider).selectContacts(selectedContact,context);
+
+  }
 
   const SelectContactScreen({super.key});
 
@@ -28,18 +34,21 @@ class SelectContactScreen extends ConsumerWidget {
                 itemCount: data.length,
                 itemBuilder: (context, index) {
                   final contact = data[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: ListTile(
-                      title: TextWidget(
-                        title: contact.displayName ?? "",
+                  return GestureDetector(
+                    onTap: ()=>selectContacts(context, contact, ref),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: ListTile(
+                        title: TextWidget(
+                          title: contact.displayName ?? "",
+                        ),
+                        leading: contact.photo == null
+                            ? Nil()
+                            : CircleAvatar(
+                                backgroundImage: MemoryImage(contact.photo!),
+                                radius: 30,
+                              ),
                       ),
-                      leading: contact.photo == null
-                          ? Nil()
-                          : CircleAvatar(
-                              backgroundImage: MemoryImage(contact.photo!),
-                              radius: 30,
-                            ),
                     ),
                   );
                 });
