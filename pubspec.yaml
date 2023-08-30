@@ -25,6 +25,8 @@ dependencies:
   #
   country_code_picker: 3.0.0
   image_picker: ^1.0.2
+  flutter_contacts: ^1.1.7+1
+  nil: ^1.1.1
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
 

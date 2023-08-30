@@ -22,3 +22,11 @@ Future<File?> pickImageFromGallery (BuildContext context)async{
   return image;
 
 }
+
+void showSnackBar(BuildContext context, String string) {
+  ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(string),
+      )
+  );
+}
