@@ -41,7 +41,7 @@ class MyApp extends ConsumerWidget {
 
           )
         ),
-        scaffoldBackgroundColor: backgroundColor,
+        scaffoldBackgroundColor: appBarColor,
       ),
       onGenerateRoute: (settings) => generateRoute(settings),
       home: ref.watch(userDataAuthProvider).when(

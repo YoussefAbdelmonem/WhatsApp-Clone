@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/data/model/user_model.dart';
-import 'package:whats_app_clone/screens/mobile_chat_screen.dart';
+import 'package:whats_app_clone/features/auth/screens/chat/screens/mobile_chat_screen.dart';
 import 'package:whats_app_clone/utils/utils.dart';
 
 final selectContactsRepoProvider = Provider((ref) => SelectContactsRepo(
@@ -37,29 +37,37 @@ Future<List<Contact>> getContacts() async {
   return contacts;
 
 }
-void selectContacts (Contact selectedContact,BuildContext context)async{
-  try{
-   var userCollection=await firestore.collection("users").get();
-   bool isFund=false;
-   for(var document in userCollection.docs){
-  var userData =UserModel.fromJson(document.data());
- String selectedNumber =selectedContact.phones[0].number.replaceAll(" ", "");
-  if(userData.phoneNumber==selectedNumber){
-    isFund=true;
-    /// navigate to chat screen
-    Navigator.pushNamed(context, MobileChatScreen.routeName);
+
+  void selectContacts(Contact selectedContact, BuildContext context) async {
+    try {
+      var userCollection = await firestore.collection('users').get();
+      bool isFound = false;
+
+      for (var document in userCollection.docs) {
+        var userData = UserModel.fromJson(document.data());
+        String selectedPhoneNum = selectedContact.phones[0].number.replaceAll(
+          ' ',
+          '',
+        );
+        if (selectedPhoneNum == userData.phoneNumber) {
+          isFound = true;
+          Navigator.pushNamed(
+            context,
+            MobileChatScreen.routeName,
+            arguments: {
+              'name': userData.name,
+              'uid': userData.uid,
+            },
+          );
+        }
+      }
+
+      if (!isFound) {
+       showSnackBar(context, 'This number does not exist on this app.');
+      }
+    } catch (e) {
+      showSnackBar( context,  e.toString());
+    }
   }
-  if(!isFund){
-    showSnackBar(context, "User not found in the App");
-  }
-
-   }
-
-  }catch (e){
-    showSnackBar(context, e.toString());
-  }
-}
-
-
 
 }
