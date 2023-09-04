@@ -28,6 +28,7 @@ dependencies:
   flutter_contacts: ^1.1.7+1
   nil: ^1.1.1
   uuid: ^4.0.0
+  intl: ^0.18.1
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
 

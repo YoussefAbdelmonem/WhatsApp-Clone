@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:whats_app_clone/data/model/chat_contacts_model.dart';
 import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
 import 'package:whats_app_clone/features/chat/repo/chat_repo.dart';
 
@@ -13,6 +14,10 @@ class ChatController {
   final ProviderRef ref;
 
   ChatController({required this.chatRepository, required this.ref});
+
+  Stream <List<ChatContact> > chatContacts() {
+    return chatRepository.getChatContacts();
+  }
 
   void sendMessage(
     BuildContext context,

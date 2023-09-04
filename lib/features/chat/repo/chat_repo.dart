@@ -9,10 +9,9 @@ import 'package:whats_app_clone/data/model/message_model.dart';
 import 'package:whats_app_clone/data/model/user_model.dart';
 import 'package:whats_app_clone/utils/utils.dart';
 
-
-final chatRepositoryProvider  =
-  Provider((ref) => ChatRepository(firestore: FirebaseFirestore.instance, firebaseAuth: FirebaseAuth.instance));
-
+final chatRepositoryProvider = Provider((ref) => ChatRepository(
+    firestore: FirebaseFirestore.instance,
+    firebaseAuth: FirebaseAuth.instance));
 
 class ChatRepository {
   final FirebaseFirestore firestore;
@@ -20,6 +19,36 @@ class ChatRepository {
   final FirebaseAuth firebaseAuth;
 
   ChatRepository({required this.firestore, required this.firebaseAuth});
+
+  Stream<List<ChatContact>> getChatContacts()  {
+   return  firestore
+        .collection("users")
+        .doc(firebaseAuth.currentUser!.uid)
+        .collection("chats")
+        .snapshots()
+        .asyncMap((event) async {
+      List<ChatContact> contacts = [];
+      for (var element in event.docs) {
+        var chatContact = ChatContact.fromMap(element.data());
+        var userData = await firestore
+            .collection('users')
+            .doc(chatContact.contactId)
+            .get();
+        var user = UserModel.fromJson(userData.data()!);
+        contacts.add(
+          ChatContact(
+            name: user.name,
+            profilePic: user.profilePicture,
+            contactId: chatContact.contactId,
+            timeSent: chatContact.timeSent,
+            lastMessage: chatContact.lastMessage,
+          ),
+        );
+      }
+      return contacts;
+    });
+
+  }
 
   void saveDataToUserSubCollection({
     required UserModel receiverUser,
