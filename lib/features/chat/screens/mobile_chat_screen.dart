@@ -66,7 +66,9 @@ class MobileChatScreen extends ConsumerWidget {
           const Expanded(
             child: ChatList(),
           ),
-          SendChatWidget()
+          SendChatWidget(
+            receiverUserId: uid,
+          )
         ],
       ),
     );

@@ -1,45 +1,74 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/colors.dart';
+import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
+import 'package:whats_app_clone/features/chat/controller/chat_controller.dart';
 import 'package:whats_app_clone/utils/responsive_layout.dart';
 
-class SendChatWidget extends StatefulWidget {
-   SendChatWidget({super.key});
+class SendChatWidget extends ConsumerStatefulWidget {
+  SendChatWidget(  {required this.receiverUserId,super.key});
+  final String receiverUserId;
 
   @override
-  State<SendChatWidget> createState() => _SendChatWidgetState();
+  ConsumerState<SendChatWidget> createState() => _SendChatWidgetState();
 }
 
-class _SendChatWidgetState extends State<SendChatWidget> {
-TextEditingController controller = TextEditingController();
+class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
+  TextEditingController controller = TextEditingController();
 
- String text ='';
+  String text = '';
 
-void update(value){
-  text = value;
-  setState(() {
-  });
-}
+  void update(value) {
+    text = value;
+    setState(() {});
+  }
+@override
+  void dispose() {
+  controller.dispose();
+    super.dispose();
+  }
+  void sendMessage() async {
+    if (text.isNotEmpty) {
+      ref.read(chatControllerProvider).sendMessage(
+            context,
+        controller.text.trim(),
+           widget.receiverUserId,
+          );
+    }
+    controller.text ="";
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
-    return  Row(
+    return Row(
       children: [
         Expanded(
           child: TextFormField(
             controller: controller,
-            onChanged: (value){
+            onChanged: (value) {
               update(value);
             },
             decoration: InputDecoration(
               filled: true,
               fillColor: chatBarMessage,
-              prefixIcon:  Padding(
+              prefixIcon: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 5.0),
-                child: IconButton(onPressed: (){}, icon: Icon(Icons.emoji_emotions, color: Colors.grey,)),
-
+                child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.emoji_emotions,
+                      color: Colors.grey,
+                    )),
               ),
-              suffixIcon: IconButton(onPressed: (){}, icon: Icon(Icons.camera_alt, color: Colors.grey,)),
+              suffixIcon: IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.camera_alt,
+                    color: Colors.grey,
+                  )),
               hintText: 'Type a message!',
               hintStyle: TextStyle(
                 color: Colors.white,
@@ -57,13 +86,12 @@ void update(value){
         ),
         CircleAvatar(
           backgroundColor: tabColor,
-          radius:30 ,
+          radius: 30,
           child: IconButton(
-            onPressed: (){
-              print(text);
-
+            onPressed: () {
+              sendMessage();
             },
-            icon:text.isNotEmpty?const Icon(Icons.send):  Icon(Icons.mic),
+            icon: text.isNotEmpty ? const Icon(Icons.send) : Icon(Icons.mic),
           ),
         )
       ],

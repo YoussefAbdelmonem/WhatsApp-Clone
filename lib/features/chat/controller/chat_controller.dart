@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
 import 'package:whats_app_clone/features/chat/repo/chat_repo.dart';
 
+final chatControllerProvider = Provider((ref) {
+  final chatRepository = ref.watch(chatRepositoryProvider);
+   return ChatController(chatRepository: chatRepository, ref: ref);
+});
 class ChatController {
   final ChatRepository chatRepository;
 
