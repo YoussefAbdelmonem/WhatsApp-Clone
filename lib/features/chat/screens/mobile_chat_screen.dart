@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/colors.dart';
 import 'package:whats_app_clone/data/model/user_model.dart';
 import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
-import 'package:whats_app_clone/features/auth/screens/chat/widgets/send_chat_widget.dart';
-import 'package:whats_app_clone/info.dart';
-import 'package:whats_app_clone/utils/responsive_layout.dart';
 import 'package:whats_app_clone/widgets/chat_list.dart';
+
+import '../widgets/send_chat_widget.dart';
 
 
 class MobileChatScreen extends ConsumerWidget {
