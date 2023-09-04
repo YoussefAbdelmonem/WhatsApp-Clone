@@ -5,7 +5,7 @@ import 'package:whats_app_clone/colors.dart';
 import 'package:whats_app_clone/features/chat/controller/chat_controller.dart';
 import 'package:whats_app_clone/info.dart';
 
-import '../features/chat/screens/mobile_chat_screen.dart';
+import '../screens/mobile_chat_screen.dart';
 
 class ContactsList extends ConsumerWidget {
   const ContactsList({Key? key}) : super(key: key);
