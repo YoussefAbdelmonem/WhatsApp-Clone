@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:whats_app_clone/common/enums/message_enum.dart';
 import 'package:whats_app_clone/data/model/chat_contacts_model.dart';
 import 'package:whats_app_clone/data/model/user_model.dart';
 import 'package:whats_app_clone/utils/utils.dart';
@@ -48,6 +49,19 @@ class ChatRepository {
         .collection('chats')
         .doc(receiverUserId)
         .set(senderChatContact.toMap());
+  }
+  void saveMessageToMessageSubCollection(
+      {
+        required String text,
+        required String messageId,
+      required String receiverUserId,
+      required String senderUserName,
+      required  receiverUserName,
+      required  MessageEnum messageType,
+      required DateTime sendTime
+      }) async {
+
+
   }
 
   void sendTextMessage(
