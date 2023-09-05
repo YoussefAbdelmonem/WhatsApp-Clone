@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:whats_app_clone/common/enums/message_enum.dart';
+import 'package:whats_app_clone/common/repo/common_firebase_storage.dart';
 import 'package:whats_app_clone/data/model/chat_contacts_model.dart';
 import 'package:whats_app_clone/data/model/message_model.dart';
 import 'package:whats_app_clone/data/model/user_model.dart';
@@ -185,5 +188,24 @@ class ChatRepository {
     } catch (e) {
       showSnackBar(context, e.toString());
     }
+  }
+
+  void sendFileMessage({
+    required BuildContext context,
+    required File file,
+    required String receiverUserId,
+    required UserModel senderUser,
+    required MessageEnum messageEnum,
+    required ProviderRef ref,
+  }) async {
+    var timeSent = DateTime.now();
+
+    var messageId = Uuid().v1();
+    await ref.read(commonFirebaseStorageRepositoryProvider).storeFileToFirebase(
+        "chat/${messageEnum.type}/${senderUser.uid}/$receiverUserId/$messageId",
+        file);
+    UserModel receiverUserData;
+    var userDataMap = await firestore.collection('users').doc(receiverUserId).get();
+    receiverUserData = UserModel.fromJson(userDataMap.data()!);
   }
 }
