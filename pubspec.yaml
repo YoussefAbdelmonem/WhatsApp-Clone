@@ -29,6 +29,7 @@ dependencies:
   nil: ^1.1.1
   uuid: ^4.0.0
   intl: ^0.18.1
+  cached_network_image: ^3.2.3
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
 

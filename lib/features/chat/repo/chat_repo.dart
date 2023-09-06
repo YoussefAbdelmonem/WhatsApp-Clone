@@ -75,6 +75,7 @@ class ChatRepository {
   void saveDataToUserSubCollection({
     required UserModel receiverUser,
     required UserModel senderUser,
+    // required String text,
     required String message,
     required String receiverUserId,
     required DateTime time,
@@ -198,14 +199,56 @@ class ChatRepository {
     required MessageEnum messageEnum,
     required ProviderRef ref,
   }) async {
-    var timeSent = DateTime.now();
+    try {
+      var timeSent = DateTime.now();
 
-    var messageId = Uuid().v1();
-    await ref.read(commonFirebaseStorageRepositoryProvider).storeFileToFirebase(
-        "chat/${messageEnum.type}/${senderUser.uid}/$receiverUserId/$messageId",
-        file);
-    UserModel receiverUserData;
-    var userDataMap = await firestore.collection('users').doc(receiverUserId).get();
-    receiverUserData = UserModel.fromJson(userDataMap.data()!);
+      var messageId = const Uuid().v1();
+      String imageUrl = await ref
+          .read(commonFirebaseStorageRepositoryProvider)
+          .storeFileToFirebase(
+              "chat/${messageEnum.type}/${senderUser.uid}/$receiverUserId/$messageId",
+              file);
+      UserModel receiverUserData;
+      var userDataMap =
+          await firestore.collection('users').doc(receiverUserId).get();
+      receiverUserData = UserModel.fromJson(userDataMap.data()!);
+      String contactMsg;
+
+      switch (messageEnum) {
+        case MessageEnum.image:
+          contactMsg = '📷 Photo';
+          break;
+        case MessageEnum.video:
+          contactMsg = '📸 Video';
+          break;
+        case MessageEnum.audio:
+          contactMsg = '🎵 Audio';
+          break;
+        case MessageEnum.gif:
+          contactMsg = 'GIF';
+          break;
+        default:
+          contactMsg = 'GIF';
+      }
+      saveDataToUserSubCollection(
+        receiverUser: receiverUserData,
+        senderUser: senderUser,
+        message: imageUrl,
+        receiverUserId: receiverUserId,
+        time: timeSent,
+      );
+
+      saveMessageToMessageSubCollection(
+        text: imageUrl,
+        messageId: messageId,
+        receiverUserId: receiverUserId,
+        senderUserName: senderUser.name,
+        receiverUserName: receiverUserData.name,
+        messageType: messageEnum,
+        sendTime: timeSent,
+      );
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
   }
 }

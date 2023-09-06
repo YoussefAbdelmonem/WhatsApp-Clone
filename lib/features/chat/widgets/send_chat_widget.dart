@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:whats_app_clone/colors.dart';
+import 'package:whats_app_clone/common/enums/message_enum.dart';
 import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
 import 'package:whats_app_clone/features/chat/controller/chat_controller.dart';
 import 'package:whats_app_clone/utils/responsive_layout.dart';
+import 'package:whats_app_clone/utils/utils.dart';
 
 class SendChatWidget extends ConsumerStatefulWidget {
-  SendChatWidget(  {required this.receiverUserId,super.key});
+  SendChatWidget({required this.receiverUserId, super.key});
+
   final String receiverUserId;
 
   @override
@@ -22,23 +27,39 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
     text = value;
     setState(() {});
   }
-@override
+
+  @override
   void dispose() {
-  controller.dispose();
+    controller.dispose();
     super.dispose();
   }
+
   void sendMessage() async {
     if (text.isNotEmpty) {
       ref.read(chatControllerProvider).sendMessage(
             context,
-        controller.text.trim(),
-           widget.receiverUserId,
+            controller.text.trim(),
+            widget.receiverUserId,
           );
     }
-    controller.text ="";
-    setState(() {
+    controller.text = "";
+    setState(() {});
+  }
 
-    });
+  void sendFileMessage(
+    File file,
+    MessageEnum messageEnum,
+  ) async {
+    ref
+        .read(chatControllerProvider)
+        .sendFileMessage(context, file, widget.receiverUserId, messageEnum);
+  }
+
+  void selectImage() async {
+    File? image = await pickImageFromGallery(context);
+    if (image != null) {
+      sendFileMessage(image, MessageEnum.image);
+    }
   }
 
   @override
@@ -64,7 +85,7 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
                     )),
               ),
               suffixIcon: IconButton(
-                  onPressed: () {},
+                  onPressed: selectImage,
                   icon: Icon(
                     Icons.camera_alt,
                     color: Colors.grey,

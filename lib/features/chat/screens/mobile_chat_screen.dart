@@ -7,44 +7,40 @@ import 'package:whats_app_clone/features/chat/widgets/chat_list.dart';
 
 import '../widgets/send_chat_widget.dart';
 
-
 class MobileChatScreen extends ConsumerWidget {
   static const routeName = '/mobile-chat';
   final String name;
   final String uid;
-  const MobileChatScreen({Key? key, required this.name, required this.uid}) : super(key: key);
+
+  const MobileChatScreen({Key? key, required this.name, required this.uid})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBarColor,
         title: StreamBuilder<UserModel>(
-          stream: ref.read(authControllerProvider).userDataById(uid),
-          builder: (context,snapShot) {
-           if(snapShot.connectionState ==ConnectionState.waiting){
-             return CircularProgressIndicator();
-           }
-           return Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-               Text(
-                 name,
-                 style: TextStyle(
-                   fontSize: 12
-                 ),
-               ),
-               // 10.ph,
-               Text(
-                 snapShot.data!.isOnline?'online':'offline',
-                 style: TextStyle(
-                     fontSize: 12
-                 ),
-               )
-             ],
-           );
-          }
-        ),
+            stream: ref.read(authControllerProvider).userDataById(uid),
+            builder: (context, snapShot) {
+              if (snapShot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  // 10.ph,
+                  Text(
+                    snapShot.data!.isOnline ? 'online' : 'offline',
+                    style: TextStyle(fontSize: 12),
+                  )
+                ],
+              );
+            }),
         centerTitle: false,
         actions: [
           IconButton(
@@ -63,7 +59,7 @@ class MobileChatScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
-           Expanded(
+          Expanded(
             child: ChatList(
               receiverUserId: uid,
             ),

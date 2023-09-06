@@ -47,8 +47,10 @@ class AuthRepository {
   }
 
   Future<UserModel?> getCurrentUserData() async {
-    var userData =
-    await firebaseFireStore.collection('users').doc(auth.currentUser?.uid).get();
+    var userData = await firebaseFireStore
+        .collection('users')
+        .doc(auth.currentUser?.uid)
+        .get();
 
     UserModel? user;
     if (userData.data() != null) {
@@ -71,11 +73,11 @@ class AuthRepository {
       Navigator.pushNamedAndRemoveUntil(
         context,
         UserInformationScreen.routeName,
-            (route) => false,
+        (route) => false,
       );
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.message!)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message!)));
     }
   }
 
@@ -94,9 +96,9 @@ class AuthRepository {
         photoUrl = await ref
             .read(commonFirebaseStorageRepositoryProvider)
             .storeFileToFirebase(
-          'profilePic/$uid',
-          profilePic,
-        );
+              'profilePic/$uid',
+              profilePic,
+            );
       }
 
       var user = UserModel(
@@ -104,7 +106,7 @@ class AuthRepository {
         uid: uid,
         isOnline: true,
         phoneNumber: auth.currentUser!.phoneNumber!,
-       groupIds: [],
+        groupIds: [],
         profilePicture: photoUrl,
       );
 
@@ -115,23 +117,27 @@ class AuthRepository {
         MaterialPageRoute(
           builder: (context) => const MobileLayoutScreen(),
         ),
-            (route) => false,
+        (route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString())));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
+
   Stream<UserModel> userData(String userId) {
     return firebaseFireStore.collection('users').doc(userId).snapshots().map(
           (event) => UserModel.fromJson(
-        event.data()!,
-      ),
-    );
+            event.data()!,
+          ),
+        );
   }
 
   void setUserState(bool isOnline) async {
-    await firebaseFireStore.collection('users').doc(auth.currentUser!.uid).update({
+    await firebaseFireStore
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .update({
       'isOnline': isOnline,
     });
   }
