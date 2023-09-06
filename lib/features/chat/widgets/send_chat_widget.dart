@@ -61,6 +61,12 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
       sendFileMessage(image, MessageEnum.image);
     }
   }
+  void selectVideo() async {
+    File? video = await pickVideoFromGallery(context);
+    if (video != null) {
+      sendFileMessage(video, MessageEnum.video);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,19 +85,25 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
                 padding: EdgeInsets.symmetric(horizontal: 5.0),
                 child: IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.emoji_emotions,
                       color: Colors.grey,
                     )),
               ),
-              suffixIcon: IconButton(
+              suffix: IconButton(
                   onPressed: selectImage,
                   icon: Icon(
                     Icons.camera_alt,
                     color: Colors.grey,
                   )),
+              suffixIcon:  IconButton(
+                  onPressed: selectVideo,
+                  icon: Icon(
+                    Icons.attach_file_rounded,
+                    color: Colors.grey,
+                  )),
               hintText: 'Type a message!',
-              hintStyle: TextStyle(
+              hintStyle: const TextStyle(
                 color: Colors.white,
               ),
               border: OutlineInputBorder(
