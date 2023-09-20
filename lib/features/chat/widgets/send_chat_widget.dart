@@ -70,6 +70,13 @@ bool isShowSendButton = false;
       sendFileMessage(video, MessageEnum.video);
     }
   }
+  void selectGif() async {
+
+    final gif = await pickGIF(context);
+    if (gif != null) {
+      ref.read(chatControllerProvider).sendGIFMessage(context, gif.url, widget.receiverUserId);
+    }
+  }
   void hideEmojiContainer() {
     setState(() {
       isShowEmojiContainer = false;
@@ -102,8 +109,8 @@ bool isShowSendButton = false;
           children: [
             Expanded(
               child: TextFormField(
-                controller: controller,
                 focusNode: focusNode,
+                controller: controller,
                 onChanged: (val) {
                   if (val.isNotEmpty) {
                     setState(() {
@@ -117,32 +124,54 @@ bool isShowSendButton = false;
                 },
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: chatBarMessage,
+                  fillColor: mobileChatBoxColor,
                   prefixIcon: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 5.0),
-                    child: IconButton(
-                        onPressed:toggleEmojiKeyboardContainer,
-                        icon: const Icon(
-                          Icons.emoji_emotions,
-                          color: Colors.grey,
-                        )),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: SizedBox(
+                      width: 100,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: toggleEmojiKeyboardContainer,
+                            icon: const Icon(
+                              Icons.emoji_emotions,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: selectGif,
+                            icon: const Icon(
+                              Icons.gif,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  suffix: IconButton(
-                      onPressed: selectImage,
-                      icon: Icon(
-                        Icons.camera_alt,
-                        color: Colors.grey,
-                      )),
-                  suffixIcon:  IconButton(
-                      onPressed: selectVideo,
-                      icon: Icon(
-                        Icons.attach_file_rounded,
-                        color: Colors.grey,
-                      )),
+                  suffixIcon: SizedBox(
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: selectImage,
+                          icon: const Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: selectVideo,
+                          icon: const Icon(
+                            Icons.attach_file,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   hintText: 'Type a message!',
-                  hintStyle: const TextStyle(
-                    color: Colors.white,
-                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                     borderSide: const BorderSide(
@@ -154,16 +183,26 @@ bool isShowSendButton = false;
                 ),
               ),
             ),
-            CircleAvatar(
-              backgroundColor: tabColor,
-              radius: 30,
-              child: IconButton(
-                onPressed: () {
-                  sendMessage();
-                },
-                icon:isShowSendButton ? const Icon(Icons.send) : Icon(Icons.mic),
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: 8,
+                right: 2,
+                left: 2,
               ),
-            )
+              child: CircleAvatar(
+                backgroundColor: const Color(0xFF128C7E),
+                radius: 25,
+                child: GestureDetector(
+                  child: Icon(
+                    isShowSendButton
+                        ? Icons.send
+                        : Icons.mic,
+                    color: Colors.white,
+                  ),
+                  onTap: sendMessage,
+                ),
+              ),
+            ),
           ],
         ),
         isShowEmojiContainer
@@ -184,7 +223,26 @@ bool isShowSendButton = false;
             }),
           ),
         )
-            : const Nil(),
+            : const SizedBox(),
+        isShowEmojiContainer
+            ? SizedBox(
+          height: 310,
+          child: EmojiPicker(
+            onEmojiSelected: ((category, emoji) {
+              setState(() {
+                controller.text =
+                    controller.text + emoji.emoji;
+              });
+
+              if (!isShowSendButton) {
+                setState(() {
+                  isShowSendButton = true;
+                });
+              }
+            }),
+          ),
+        )
+            : const SizedBox(),
       ],
     );
   }

@@ -33,6 +33,7 @@ dependencies:
   video_player:
   cached_video_player:
   emoji_picker_flutter: ^1.6.1
+  enough_giphy_flutter: ^0.3.0
 
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7

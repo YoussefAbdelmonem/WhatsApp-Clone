@@ -42,7 +42,7 @@ class SenderMessageCard extends StatelessWidget {
                 ),
                 child: DisplayImageWidget(
                   message: message,
-                  messageEnum: messageEnum,
+                  type: messageEnum,
                 ),
               ),
               Positioned(

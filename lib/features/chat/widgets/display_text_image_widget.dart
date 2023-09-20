@@ -5,20 +5,59 @@ import 'package:whats_app_clone/features/chat/widgets/video_widget.dart';
 
 class DisplayImageWidget extends StatelessWidget {
   final String message;
-  final MessageEnum messageEnum;
-
-  const DisplayImageWidget(
-      {super.key, required this.message, required this.messageEnum});
+  final MessageEnum type;
+  const DisplayImageWidget({
+    Key? key,
+    required this.message,
+    required this.type,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return messageEnum == MessageEnum.text ? Text(
-        message,
-        style: const TextStyle(
-          fontSize: 16,
-        )) : messageEnum == MessageEnum.image ? CachedNetworkImage(
-        imageUrl: message) : messageEnum == MessageEnum.video ?VideoPlayerItem(
-        videoUrl: message,
-    ):Container();
+    bool isPlaying = false;
+    // final AudioPlayer audioPlayer = AudioPlayer();
+
+    return type == MessageEnum.text
+        ? Text(
+      message,
+      style: const TextStyle(
+        fontSize: 16,
+      ),
+    )
+    //     : type == MessageEnum.audio
+    //     ? StatefulBuilder(builder: (context, setState) {
+    //   return IconButton(
+    //     constraints: const BoxConstraints(
+    //       minWidth: 100,
+    //     ),
+    //     onPressed: () async {
+    //       if (isPlaying) {
+    //         await audioPlayer.pause();
+    //         setState(() {
+    //           isPlaying = false;
+    //         });
+    //       } else {
+    //         await audioPlayer.play(UrlSource(message));
+    //         setState(() {
+    //           isPlaying = true;
+    //         });
+    //       }
+    //     },
+    //     icon: Icon(
+    //       isPlaying ? Icons.pause_circle : Icons.play_circle,
+    //     ),
+    //   );
+    // })
+        : type == MessageEnum.video
+        ? VideoPlayerItem(
+      videoUrl: message,
+    )
+        : type == MessageEnum.gif
+        ? CachedNetworkImage(
+      imageUrl: message,
+    )
+        : CachedNetworkImage(
+      imageUrl: message,
+    );
   }
 }

@@ -38,7 +38,7 @@ final MessageEnum messageEnum;
                 ),
                 child: DisplayImageWidget(
                   message: message,
-                  messageEnum: messageEnum,
+                  type: MessageEnum.image,
                 ),
                 ),
 
