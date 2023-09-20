@@ -8,7 +8,6 @@ import 'package:whats_app_clone/screens/mobile_layout_screen.dart';
 import 'package:whats_app_clone/utils/routes.dart';
 
 import 'features/auth/controller/auth_controller.dart';
-import 'features/auth/screens/login/screen/login_screen.dart';
 
 void main()async {
   WidgetsFlutterBinding.ensureInitialized();

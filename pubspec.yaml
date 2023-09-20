@@ -31,7 +31,9 @@ dependencies:
   intl: ^0.18.1
   cached_network_image: ^3.2.3
   video_player:
-  cached_video_player: 2.0.2
+  cached_video_player:
+  emoji_picker_flutter: ^1.6.1
+
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
 
