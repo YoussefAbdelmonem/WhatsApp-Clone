@@ -8,7 +8,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:whats_app_clone/colors.dart';
 import 'package:whats_app_clone/common/enums/message_enum.dart';
+import 'package:whats_app_clone/common/providers/message_reply_provider.dart';
 import 'package:whats_app_clone/features/chat/controller/chat_controller.dart';
+import 'package:whats_app_clone/features/chat/widgets/message_reply_widget.dart';
 import 'package:whats_app_clone/utils/utils.dart';
 
 class SendChatWidget extends ConsumerStatefulWidget {
@@ -24,7 +26,7 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
   TextEditingController controller = TextEditingController();
   bool isShowEmojiContainer = false;
   FocusNode focusNode = FocusNode();
-  FlutterSoundRecorder ? soundRecorder;
+  FlutterSoundRecorder? soundRecorder;
   String text = '';
   bool isShowSendButton = false;
   bool isRecorderInit = false;
@@ -34,40 +36,36 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    soundRecorder=FlutterSoundRecorder();
+    soundRecorder = FlutterSoundRecorder();
     openAudio();
   }
+
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
     soundRecorder!.closeRecorder();
-    isRecorderInit=false;
+    isRecorderInit = false;
   }
 
   void openAudio() async {
     final status = await Permission.microphone.request();
-    if(status != PermissionStatus.granted){
-   throw  SnackBar(content: Text("Permission not granted"));
+    if (status != PermissionStatus.granted) {
+      throw SnackBar(content: Text("Permission not granted"));
     }
     await soundRecorder!.openRecorder();
-    isRecorderInit=true;
+    isRecorderInit = true;
+  }
 
-}
   void update(value) {
     text = value;
     setState(() {});
   }
 
-
-
   void sendTextMessage() async {
     if (isShowSendButton) {
       ref.read(chatControllerProvider).sendTextMessage(
-        context,
-        controller.text.trim(),
-        widget.receiverUserId,
-      );
+          context, controller.text.trim(), widget.receiverUserId);
       setState(() {
         controller.text = '';
       });
@@ -96,9 +94,8 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
     File file,
     MessageEnum messageEnum,
   ) async {
-    ref
-        .read(chatControllerProvider)
-        .sendFileMessage(context, file, widget.receiverUserId, messageEnum);
+    ref.read(chatControllerProvider).sendFileMessage(
+        context, file, widget.receiverUserId, messageEnum, false);
   }
 
   void selectImage() async {
@@ -120,7 +117,7 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
     if (gif != null) {
       ref
           .read(chatControllerProvider)
-          .sendGIFMessage(context, gif.url, widget.receiverUserId);
+          .sendGIFMessage(context, gif.url, widget.receiverUserId, false);
     }
   }
 
@@ -152,8 +149,11 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final messageReply = ref.watch(messageReplyProvider);
+    final isShownMessageReply = messageReply != null;
     return Column(
       children: [
+        isShownMessageReply ? const MessageReplyPreview() : SizedBox(),
         Row(
           children: [
             Expanded(
@@ -171,7 +171,6 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
                     });
                   }
                 },
-
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: mobileChatBoxColor,
@@ -243,15 +242,15 @@ class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
                 backgroundColor: const Color(0xFF128C7E),
                 radius: 25,
                 child: GestureDetector(
+                  onTap: sendTextMessage,
                   child: Icon(
                     isShowSendButton
                         ? Icons.send
                         : isRecording
-                        ? Icons.close
-                        : Icons.mic,
+                            ? Icons.close
+                            : Icons.mic,
                     color: Colors.white,
                   ),
-                  onTap: sendTextMessage,
                 ),
               ),
             ),

@@ -38,6 +38,7 @@ dependencies:
   permission_handler: 9.2.0
   path_provider: ^2.1.1
   audioplayers: ^1.0.1
+  swipe_to: ^1.0.2
 
   #STATE MANAGEMENT
   flutter_riverpod: ^2.3.7
