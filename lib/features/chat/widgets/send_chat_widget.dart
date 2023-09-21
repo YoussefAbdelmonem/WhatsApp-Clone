@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nil/nil.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:whats_app_clone/colors.dart';
 import 'package:whats_app_clone/common/enums/message_enum.dart';
-import 'package:whats_app_clone/features/auth/controller/auth_controller.dart';
 import 'package:whats_app_clone/features/chat/controller/chat_controller.dart';
-import 'package:whats_app_clone/utils/responsive_layout.dart';
 import 'package:whats_app_clone/utils/utils.dart';
 
 class SendChatWidget extends ConsumerStatefulWidget {
@@ -23,30 +23,73 @@ class SendChatWidget extends ConsumerStatefulWidget {
 class _SendChatWidgetState extends ConsumerState<SendChatWidget> {
   TextEditingController controller = TextEditingController();
   bool isShowEmojiContainer = false;
-  FocusNode focusNode =FocusNode();
+  FocusNode focusNode = FocusNode();
+  FlutterSoundRecorder ? soundRecorder;
   String text = '';
-bool isShowSendButton = false;
+  bool isShowSendButton = false;
+  bool isRecorderInit = false;
+  bool isRecording = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    soundRecorder=FlutterSoundRecorder();
+    openAudio();
+  }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+    soundRecorder!.closeRecorder();
+    isRecorderInit=false;
+  }
+
+  void openAudio() async {
+    final status = await Permission.microphone.request();
+    if(status != PermissionStatus.granted){
+   throw  SnackBar(content: Text("Permission not granted"));
+    }
+    await soundRecorder!.openRecorder();
+    isRecorderInit=true;
+
+}
   void update(value) {
     text = value;
     setState(() {});
   }
 
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
 
-  void sendMessage() async {
-    if (text.isNotEmpty) {
-      ref.read(chatControllerProvider).sendMessage(
-            context,
-            controller.text.trim(),
-            widget.receiverUserId,
-          );
+
+  void sendTextMessage() async {
+    if (isShowSendButton) {
+      ref.read(chatControllerProvider).sendTextMessage(
+        context,
+        controller.text.trim(),
+        widget.receiverUserId,
+      );
+      setState(() {
+        controller.text = '';
+      });
+    } else {
+      var tempDir = await getTemporaryDirectory();
+      var path = '${tempDir.path}/flutter_sound.aac';
+      if (!isRecorderInit) {
+        return;
+      }
+      if (isRecording) {
+        await soundRecorder!.stopRecorder();
+        sendFileMessage(File(path), MessageEnum.audio);
+      } else {
+        await soundRecorder!.startRecorder(
+          toFile: path,
+        );
+      }
+
+      setState(() {
+        isRecording = !isRecording;
+      });
     }
-    controller.text = "";
-    setState(() {});
   }
 
   void sendFileMessage(
@@ -64,19 +107,23 @@ bool isShowSendButton = false;
       sendFileMessage(image, MessageEnum.image);
     }
   }
+
   void selectVideo() async {
     File? video = await pickVideoFromGallery(context);
     if (video != null) {
       sendFileMessage(video, MessageEnum.video);
     }
   }
-  void selectGif() async {
 
+  void selectGif() async {
     final gif = await pickGIF(context);
     if (gif != null) {
-      ref.read(chatControllerProvider).sendGIFMessage(context, gif.url, widget.receiverUserId);
+      ref
+          .read(chatControllerProvider)
+          .sendGIFMessage(context, gif.url, widget.receiverUserId);
     }
   }
+
   void hideEmojiContainer() {
     setState(() {
       isShowEmojiContainer = false;
@@ -90,6 +137,7 @@ bool isShowSendButton = false;
   }
 
   void showKeyboard() => focusNode.requestFocus();
+
   void hideKeyboard() => focusNode.unfocus();
 
   void toggleEmojiKeyboardContainer() {
@@ -101,6 +149,7 @@ bool isShowSendButton = false;
       showEmojiContainer();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -122,6 +171,7 @@ bool isShowSendButton = false;
                     });
                   }
                 },
+
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: mobileChatBoxColor,
@@ -196,10 +246,12 @@ bool isShowSendButton = false;
                   child: Icon(
                     isShowSendButton
                         ? Icons.send
+                        : isRecording
+                        ? Icons.close
                         : Icons.mic,
                     color: Colors.white,
                   ),
-                  onTap: sendMessage,
+                  onTap: sendTextMessage,
                 ),
               ),
             ),
@@ -207,41 +259,21 @@ bool isShowSendButton = false;
         ),
         isShowEmojiContainer
             ? SizedBox(
-          height: 310,
-          child: EmojiPicker(
-            onEmojiSelected: ((category, emoji) {
-              setState(() {
-                controller.text =
-                    controller.text + emoji.emoji;
-              });
+                height: 310,
+                child: EmojiPicker(
+                  onEmojiSelected: ((category, emoji) {
+                    setState(() {
+                      controller.text = controller.text + emoji.emoji;
+                    });
 
-              if (!isShowSendButton) {
-                setState(() {
-                  isShowSendButton = true;
-                });
-              }
-            }),
-          ),
-        )
-            : const SizedBox(),
-        isShowEmojiContainer
-            ? SizedBox(
-          height: 310,
-          child: EmojiPicker(
-            onEmojiSelected: ((category, emoji) {
-              setState(() {
-                controller.text =
-                    controller.text + emoji.emoji;
-              });
-
-              if (!isShowSendButton) {
-                setState(() {
-                  isShowSendButton = true;
-                });
-              }
-            }),
-          ),
-        )
+                    if (!isShowSendButton) {
+                      setState(() {
+                        isShowSendButton = true;
+                      });
+                    }
+                  }),
+                ),
+              )
             : const SizedBox(),
       ],
     );

@@ -40,7 +40,7 @@ class SenderMessageCard extends StatelessWidget {
                   top: 5,
                   bottom: 30,
                 ),
-                child: DisplayImageWidget(
+                child: DisplayTextImageGIF(
                   message: message,
                   type: messageEnum,
                 ),

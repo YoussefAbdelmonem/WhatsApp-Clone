@@ -28,7 +28,7 @@ class ChatController {
     return chatRepository.getChatMessages(receiverUserId: receiverUserId);
   }
 
-  void sendMessage(
+  void sendTextMessage(
     BuildContext context,
     String text,
     String receiverUserId,
